@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pretest/constants/themes.dart';
 import 'package:pretest/models/product.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pretest/providers/item_cart_provider.dart';
 
 class ProductWidget extends StatelessWidget {
   final Product product;
 
-  ProductWidget({super.key, required this.product});
+  const ProductWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,11 @@ class ProductWidget extends StatelessWidget {
       height: 250,
       child: Container(
         decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(offset: const Offset(0, 6), color: Colors.black.withOpacity(0.8), blurRadius: 10, spreadRadius: 0)
+          BoxShadow(
+              offset: const Offset(0, 6),
+              color: Colors.black.withOpacity(0.8),
+              blurRadius: 10,
+              spreadRadius: 0)
         ]),
         margin: const EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width * 0.4,
@@ -53,13 +59,22 @@ class ProductWidget extends StatelessWidget {
                     '\$${product.price}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  IconButton(
-                      color: kBlackColor,
-                      onPressed: () {},
-                      icon: const Icon(
-                        CupertinoIcons.add,
-                        color: Colors.black,
-                      )),
+                  Consumer(
+                    builder:
+                        (BuildContext context, WidgetRef ref, Widget? child) {
+                      return IconButton(
+                          color: kBlackColor,
+                          onPressed: () {
+                            ref
+                                .read(itemCartProvider.notifier)
+                                .increment(product.pid);
+                          },
+                          icon: const Icon(
+                            CupertinoIcons.add,
+                            color: Colors.black,
+                          ));
+                    },
+                  ),
                 ],
               ),
             )

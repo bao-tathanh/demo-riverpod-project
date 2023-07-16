@@ -1,30 +1,54 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pretest/providers/item_cart_provider.dart';
+import 'package:pretest/views/checkout_page.dart';
+import 'package:pretest/views/detail_product.dart';
 import '../constants/themes.dart';
 import '../providers/product_provider.dart';
 import '../widgets/chip_widget.dart';
 import '../widgets/product_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class HomePage extends ConsumerWidget {
-   HomePage({super.key});
+  HomePage({super.key});
+
   final currentIndexProvider = StateProvider<int>((ref) => 0);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final products = ref.watch(proudctNotifierProvider);
     final currentIndex = ref.watch(currentIndexProvider);
+    final itemCarts = ref.watch(itemCartProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kSecondaryColor,
         title: SvgPicture.asset(
           'assets/general/store_brand_white.svg',
-          colorFilter: const ColorFilter.mode(kWhiteColor, BlendMode.clear),
+          color: kWhiteColor,
           width: 180,
         ),
+        actions: [
+          Padding(
+              padding: const EdgeInsets.only(right: 20, top: 10),
+              child: Badge(
+                label: Text('${itemCarts.length}'),
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CardPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.local_mall,
+                      size: 24,
+                    )),
+              ))
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -68,7 +92,13 @@ class HomePage extends ConsumerWidget {
                 child: ListView.builder(
                   itemCount: 4,
                   scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) => ProductWidget(product: products[index]),
+                  itemBuilder: (context, index) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => DetailProduct(index: index),
+                        ));
+                      },
+                      child: ProductWidget(product: products[index])),
                 ),
               ),
               const SizedBox(
@@ -92,12 +122,18 @@ class HomePage extends ConsumerWidget {
                 itemCount: 10,
                 shrinkWrap: true,
                 gridDelegate:
-                const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
-                itemBuilder: (context, index) => SizedBox(
-                  height: MediaQuery.of(context).size.width * 0.7,
-                    child:  ProductWidget(product: products[index]),
-
+                    const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2),
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => DetailProduct(index: index),
+                    ));
+                  },
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.width * 0.7,
+                    child: ProductWidget(product: products[index]),
+                  ),
                 ),
               )
             ],
