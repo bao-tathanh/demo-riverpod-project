@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretest/providers/item_cart_provider.dart';
 
 import '../providers/product_provider.dart';
+import '../providers/total_checkout.dart';
 import 'checkout_page.dart';
 
 class DetailProduct extends ConsumerWidget {
@@ -15,6 +16,9 @@ class DetailProduct extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final product = ref.watch(proudctNotifierProvider);
+    final totalCart = ref.watch(totalNotifierProvider);
+    final totalCartNoti = ref.watch(totalNotifierProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kSecondaryColor,
@@ -24,7 +28,7 @@ class DetailProduct extends ConsumerWidget {
           Padding(
               padding: const EdgeInsets.only(right: 20, top: 10),
               child: Badge(
-                label: Text('2'),
+                label: Text('${totalCart.length}'),
                 child: IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -52,10 +56,7 @@ class DetailProduct extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Title',
-                      style: TextStyle(
-                          color: kPrimaryColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: kPrimaryColor, fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(
                     height: 10,
                   ),
@@ -64,6 +65,13 @@ class DetailProduct extends ConsumerWidget {
                         color: kBlackColor,
                         fontSize: 9,
                       )),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    '\$${product[index].price}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -78,29 +86,22 @@ class DetailProduct extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('\$${product[index].price * product[index].qty}',
-                          style: const TextStyle(
-                              color: kPrimaryColor,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold)),
+                      Text('\$${product[index].price * totalCartNoti.getProductQty(product[index].pid)}',
+                          style: const TextStyle(color: kPrimaryColor, fontSize: 24, fontWeight: FontWeight.bold)),
                       Row(
                         children: [
                           IconButton(
                               onPressed: () {
-                                ref
-                                    .read(proudctNotifierProvider.notifier)
-                                    .decreaseQty(product[index].pid);
+                                ref.read(totalNotifierProvider.notifier).removeItem(product[index].pid);
                               },
                               icon: const Icon(Icons.remove_circle_outline)),
-                          const Text(
-                            '1',
-                            style: TextStyle(fontSize: 19),
+                          Text(
+                            '${totalCartNoti.getProductQty(product[index].pid)}',
+                            style: const TextStyle(fontSize: 19),
                           ),
                           IconButton(
                               onPressed: () {
-                                ref
-                                    .read(proudctNotifierProvider.notifier)
-                                    .incrementQty(product[index].pid);
+                                ref.read(totalNotifierProvider.notifier).addItem(product[index].pid);
                               },
                               icon: const Icon(Icons.add_circle_outline)),
                         ],
@@ -113,8 +114,7 @@ class DetailProduct extends ConsumerWidget {
                       width: 200,
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(kPrimaryColor),
+                            backgroundColor: MaterialStateProperty.all<Color>(kPrimaryColor),
                           ),
                           onPressed: () {},
                           child: const Text('Add item to bag')),

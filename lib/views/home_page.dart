@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pretest/providers/item_cart_provider.dart';
+import 'package:pretest/providers/total_checkout.dart';
 import 'package:pretest/views/checkout_page.dart';
 import 'package:pretest/views/detail_product.dart';
 import '../constants/themes.dart';
@@ -19,8 +20,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final products = ref.watch(proudctNotifierProvider);
     final currentIndex = ref.watch(currentIndexProvider);
-    final itemCarts = ref.watch(itemCartProvider);
-
+    final totalCart = ref.watch(totalNotifierProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kSecondaryColor,
@@ -33,7 +33,7 @@ class HomePage extends ConsumerWidget {
           Padding(
               padding: const EdgeInsets.only(right: 20, top: 10),
               child: Badge(
-                label: Text('${itemCarts.length}'),
+                label: Text('${totalCart.length}'),
                 child: IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -98,7 +98,9 @@ class HomePage extends ConsumerWidget {
                           builder: (context) => DetailProduct(index: index),
                         ));
                       },
-                      child: ProductWidget(product: products[index])),
+                      child: ProductWidget(
+                        index: index,
+                      )),
                 ),
               ),
               const SizedBox(
@@ -121,9 +123,7 @@ class HomePage extends ConsumerWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 10,
                 shrinkWrap: true,
-                gridDelegate:
-                    const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
+                gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                 itemBuilder: (context, index) => GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
@@ -132,7 +132,7 @@ class HomePage extends ConsumerWidget {
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.width * 0.7,
-                    child: ProductWidget(product: products[index]),
+                    child: ProductWidget(index: index),
                   ),
                 ),
               )
@@ -142,8 +142,7 @@ class HomePage extends ConsumerWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
-        onTap: (value) =>
-            ref.read(currentIndexProvider.notifier).update((state) => value),
+        onTap: (value) => ref.read(currentIndexProvider.notifier).update((state) => value),
         selectedItemColor: kPrimaryColor,
         unselectedItemColor: kSecondaryColor,
         items: const [

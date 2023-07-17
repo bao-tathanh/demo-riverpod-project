@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretest/providers/item_cart_provider.dart';
+import 'package:pretest/providers/total_checkout.dart';
 
 import '../constants/themes.dart';
 
@@ -9,16 +10,15 @@ class CardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final itemBag = ref.watch(itemCartProvider);
+    final totalCart = ref.watch(totalNotifierProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kSecondaryColor,
-        title: const Text('MyCart Page'),
+        title: const Text('MyCart'),
         actions: [
           Padding(
               padding: const EdgeInsets.only(right: 20),
-              child: IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.local_mall)))
+              child: IconButton(onPressed: () {}, icon: const Icon(Icons.local_mall)))
         ],
       ),
       body: Column(children: [
@@ -27,7 +27,7 @@ class CardPage extends ConsumerWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             child: ListView.builder(
-              itemCount: itemBag.length,
+              itemCount: totalCart.length,
               itemBuilder: (context, index) => Card(
                 child: Container(
                   color: Colors.white,
@@ -35,7 +35,7 @@ class CardPage extends ConsumerWidget {
                   child: Row(children: [
                     Expanded(
                       flex: 1,
-                      child: Image.asset(itemBag[index].imgUrl),
+                      child: Image.asset(totalCart[index].imgUrl),
                     ),
                     Expanded(
                         flex: 3,
@@ -45,18 +45,20 @@ class CardPage extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                itemBag[index].title,
+                                totalCart[index].title,
                                 style: AppTheme.kCardTitle,
                               ),
-
                               Text(
-                                itemBag[index].shortDescription,
+                                totalCart[index].shortDescription,
                                 style: AppTheme.kBodyText,
                               ),
                               Text(
-                                '\$${itemBag[index].price}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                                '\$${totalCart[index].price}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                'X${totalCart[index].qty}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
@@ -90,18 +92,14 @@ class CardPage extends ConsumerWidget {
                       children: [
                         const Text(
                           'FDS2023',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         Container(
                           child: const Row(
                             children: [
                               Text(
                                 'Available',
-                                style: TextStyle(
-                                    color: kPrimaryColor,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               Icon(Icons.check_circle)
                             ],
@@ -115,13 +113,11 @@ class CardPage extends ConsumerWidget {
                     children: [
                       Text(
                         'Delivery Fee:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                       ),
                       Text(
                         'Free',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -130,13 +126,11 @@ class CardPage extends ConsumerWidget {
                     children: [
                       Text(
                         'Discount:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                       ),
                       Text(
                         'No discount',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -146,17 +140,11 @@ class CardPage extends ConsumerWidget {
                     children: [
                       const Text(
                         'Total:',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: kPrimaryColor),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kPrimaryColor),
                       ),
                       Text(
-                        '\$${ref.watch(priceCalcProvider)}',
-                        style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: kPrimaryColor),
+                        '\$${ref.watch(totalNotifierProvider.notifier).getSumCheckOut()}',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kPrimaryColor),
                       ),
                     ],
                   ),

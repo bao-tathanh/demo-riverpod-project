@@ -4,23 +4,23 @@ import 'package:pretest/constants/themes.dart';
 import 'package:pretest/models/product.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretest/providers/item_cart_provider.dart';
+import 'package:pretest/providers/total_checkout.dart';
 
-class ProductWidget extends StatelessWidget {
-  final Product product;
+import '../providers/product_provider.dart';
 
-  const ProductWidget({super.key, required this.product});
+class ProductWidget extends ConsumerWidget {
+  final int index;
+
+  const ProductWidget({super.key, required this.index});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final product = ref.watch(proudctNotifierProvider);
     return SizedBox(
       height: 250,
       child: Container(
         decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 6),
-              color: Colors.black.withOpacity(0.8),
-              blurRadius: 10,
-              spreadRadius: 0)
+          BoxShadow(offset: const Offset(0, 6), color: Colors.black.withOpacity(0.8), blurRadius: 10, spreadRadius: 0)
         ]),
         margin: const EdgeInsets.all(10),
         width: MediaQuery.of(context).size.width * 0.4,
@@ -33,7 +33,7 @@ class ProductWidget extends StatelessWidget {
                 width: double.infinity,
                 margin: const EdgeInsets.all(12),
                 color: kLightBackground,
-                child: Image.asset(product.imgUrl),
+                child: Image.asset(product[index].imgUrl),
               ),
             ),
             Padding(
@@ -43,10 +43,10 @@ class ProductWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.title,
+                    product[index].title,
                     style: AppTheme.kCardTitle,
                   ),
-                  Text(product.shortDescription, style: AppTheme.kBodyText),
+                  Text(product[index].shortDescription, style: AppTheme.kBodyText),
                 ],
               ),
             ),
@@ -56,18 +56,15 @@ class ProductWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '\$${product.price}',
+                    '\$${product[index].price}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Consumer(
-                    builder:
-                        (BuildContext context, WidgetRef ref, Widget? child) {
+                    builder: (BuildContext context, WidgetRef ref, Widget? child) {
                       return IconButton(
                           color: kBlackColor,
                           onPressed: () {
-                            ref
-                                .read(itemCartProvider.notifier)
-                                .increment(product.pid);
+                            ref.read(totalNotifierProvider.notifier).addItem(product[index].pid);
                           },
                           icon: const Icon(
                             CupertinoIcons.add,

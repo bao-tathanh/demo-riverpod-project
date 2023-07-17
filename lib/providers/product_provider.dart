@@ -6,12 +6,12 @@ import '../data/list_products.dart';
 class ProductNotifier extends StateNotifier<List<Product>> {
   ProductNotifier() : super(productItems);
 
-  void isSelectItem(int pid, int index) {
-    state = [
-      for (final product in state)
-        if (product.pid == pid) product.copyWith(isSelected: !state[index].isSelected) else product,
-    ];
-  }
+  // void isSelectItem(int pid, int index) {
+  //   state = [
+  //     for (final product in state)
+  //       if (product.pid == pid) product.copyWith(isSelected: !state[index].isSelected) else product,
+  //   ];
+  // }
 
   void incrementQty(int pid) {
     state = [

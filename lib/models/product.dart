@@ -19,7 +19,7 @@ class Product {
     required this.review,
     required this.rating,
     this.isSelected = false,
-    this.qty = 1,
+    this.qty = 0,
   });
 
   Product copyWith({
