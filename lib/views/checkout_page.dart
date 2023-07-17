@@ -150,7 +150,23 @@ class CardPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ))
+            )),
+        Center(
+
+          child: Container(
+            margin: EdgeInsets.only(bottom: 30),
+            height: 50,
+            width: 200,
+            child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(kPrimaryColor),
+                ),
+                onPressed: () {
+                  ref.read(totalNotifierProvider.notifier).checkout();
+                },
+                child: const Text('Check out')),
+          ),
+        ),
       ]),
     );
   }

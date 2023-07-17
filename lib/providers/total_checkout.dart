@@ -56,6 +56,10 @@ class ListTotalNotifer extends StateNotifier<List<Product>> {
     return ans;
   }
 
+  void checkout(){
+    state = [];
+  }
+
   int getProductQty(int pid) {
     for (final i in productItems) {
       if (i.pid == pid) {
